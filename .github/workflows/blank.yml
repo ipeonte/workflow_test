@@ -64,3 +64,13 @@ jobs:
           **Repository Archive**
           - 📦 **File**: `${{ github.event.repository.name }}-${{ steps.version.outputs.version }}.zip`
           - 🔑 **SHA256**: `${{ steps.sha256.outputs.sha256 }}`
+          
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./${{ github.event.repository.name }}-${{ steps.version.outputs.version }}.zip
+        asset_name: ${{ github.event.repository.name }}-${{ steps.version.outputs.version }}.zip
+        asset_content_type: application/zip
