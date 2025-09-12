@@ -27,9 +27,12 @@ jobs:
     - name: Get version from tag
       id: version
       run: |
-        VERSION=1.1.0
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+        else
+          VERSION="snapshot-$(date +%Y%m%d-%H%M%S)"
+        fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "Version: $VERSION"
         
     - name: Create repository zip
       run: |
@@ -44,3 +47,16 @@ jobs:
         SHA256=$(sha256sum "${{ github.event.repository.name }}-${{ steps.version.outputs.version }}.zip" | cut -d' ' -f1)
         echo "sha256=$SHA256" >> $GITHUB_OUTPUT
         echo "SHA256: $SHA256"
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        release_name: Release ${{ steps.version.outputs.version }}
+        body: |
+          ## Release ${{ steps.version.outputs.version }}
+          
+          **Repository Archive**
+          - 📦 **File**: `${{ github.event.repository.name }}-${{ steps.version.outputs.version }}.zip`
+          - 🔑 **SHA256**: `${{ steps.sha256.outputs.sha256 }}`
