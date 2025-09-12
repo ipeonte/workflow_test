@@ -6,7 +6,7 @@ name: Zip and Publish Repository
 on:
   push:
     tags:
-      - 'v*'  # Triggers on version tags like v1.0.0
+      - '*'  # Triggers on version tags like 1.0.0
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
